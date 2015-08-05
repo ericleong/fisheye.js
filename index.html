@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="UTF-8">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<title>fisheye.js</title>
+	
+	<script src="fisheye.js"></script>
+</head>
+</head>
+<body>
+	<canvas id="canvas" width="640" height="640"></canvas>
+	<h1>radial lens distortion with <a href="https://github.com/ericleong/fisheye.js">fisheye.js</a></h1>
+	<div>
+		<span>pincushion</span>
+		<input id="distortion" type="range" min="-10" max="10" value="5" />
+		<span>barrel</span>
+	</div>
+	
+	<script type="text/javascript">
+		var fisheye = new Fisheye(document.getElementById('canvas'));
+
+		var distortion = document.getElementById('distortion');
+
+		var update = function() {
+			fisheye.setDistortion(distortion.value);
+			fisheye.clear();
+			fisheye.draw(img);
+		};
+
+		distortion.addEventListener('input', update);
+	
+		var img = new Image();
+		img.addEventListener('load', update, false);
+		img.src = '/rainbow-glass.jpg';
+	</script>
+</body>
+</html>
