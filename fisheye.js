@@ -128,9 +128,13 @@ Fisheye.prototype.getFragmentShader = function() {
 			void main(void) {\
 \
 				float rsq = pow(vTextureCoord.x - 0.5, 2.0) + pow(vTextureCoord.y - 0.5, 2.0);\
+				float scale = 1.0;\
+				if (uDistortion > 0.0) {\
+					scale = 1.0 + uDistortion * 0.25;\
+				}\
 \
-				vec2 distorted = vec2(0.5 + (vTextureCoord.x - 0.5) * (1.0 + uDistortion * rsq),\
-										0.5 + (vTextureCoord.y - 0.5) * (1.0 + uDistortion * rsq));\
+				vec2 distorted = vec2(0.5 + (vTextureCoord.x - 0.5) * (1.0 + uDistortion * rsq) / scale,\
+									  0.5 + (vTextureCoord.y - 0.5) * (1.0 + uDistortion * rsq) / scale);\
 \
 				if (distorted.x < 0.0 || distorted.x > 1.0 || distorted.y < 0.0 || distorted.y > 1.0) {\
 					gl_FragColor = vec4(0, 0, 0, 0);\
