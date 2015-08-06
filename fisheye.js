@@ -294,8 +294,6 @@ Fisheye.prototype.draw = function(image) {
 	this.gl.activeTexture(this.gl.TEXTURE0);
 	this.gl.bindTexture(this.gl.TEXTURE_2D, this.imageTexture);
 	
-	// Flip the image's Y axis to match the WebGL texture coordinate space.
-	this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
 	this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, image);
 	
 	this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
