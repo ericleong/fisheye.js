@@ -128,7 +128,7 @@ Fisheye.prototype.getFragmentShader = function() {
 			void main(void) {\
 \
 				float rsq = pow(vTextureCoord.x - 0.5, 2.0) + pow(vTextureCoord.y - 0.5, 2.0);\
-				float scale = 1.0 + uDistortion * 0.25;\
+				float scale = 1.0;\
 				if (uDistortion > 0.0) {\
 					scale = 1.0 + uDistortion * 0.25;\
 				}\
