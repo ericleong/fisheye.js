@@ -129,8 +129,10 @@ Fisheye.prototype.getFragmentShader = function() {
 \
 				float rsq = pow(vTextureCoord.x - 0.5, 2.0) + pow(vTextureCoord.y - 0.5, 2.0);\
 				float scale = 1.0;\
-				if (uDistortion > 0.0) {\
+				if (uDistortion >= 0.0) {\
 					scale = 1.0 + uDistortion * 0.25;\
+				} else {\
+					scale = 1.0 / (1.0 + abs(uDistortion) * 0.25);\
 				}\
 \
 				vec2 distorted = vec2(0.5 + (vTextureCoord.x - 0.5) * (1.0 + uDistortion * rsq) / scale,\
