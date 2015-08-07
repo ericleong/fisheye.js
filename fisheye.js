@@ -124,15 +124,25 @@ Fisheye.prototype.getFragmentShader = function() {
 \
 			uniform sampler2D uImage;\
 			uniform mediump float uDistortion;\
+			uniform mediump float uRatio;\
 \
 			void main(void) {\
 \
-				float rsq = pow(vTextureCoord.x - 0.5, 2.0) + pow(vTextureCoord.y - 0.5, 2.0);\
+				float rsq;\
+				float rsqLimit;\
+				if (uRatio < 1.0) {\
+					rsq = pow((vTextureCoord.x - 0.5) * uRatio, 2.0) + pow(vTextureCoord.y - 0.5, 2.0);\
+					rsqLimit = (pow(0.5 * uRatio, 2.0) + pow(0.5, 2.0)) / (2.0 / uRatio);\
+				} else {\
+					rsq = pow(vTextureCoord.x - 0.5, 2.0) + pow((vTextureCoord.y - 0.5) / uRatio, 2.0);\
+					rsqLimit = (pow(0.5, 2.0) + pow(0.5 / uRatio, 2.0)) / (2.0 * uRatio);\
+				}\
+\
 				float scale = 1.0;\
 				if (uDistortion >= 0.0) {\
-					scale = 1.0 + uDistortion * 0.25;\
+					scale = 1.0 + uDistortion * rsqLimit;\
 				} else {\
-					scale = 1.0 / (1.0 + abs(uDistortion) * 0.25);\
+					scale = 1.0 / (1.0 - uDistortion * rsqLimit);\
 				}\
 \
 				vec2 distorted = vec2(0.5 + (vTextureCoord.x - 0.5) * (1.0 + uDistortion * rsq) / scale,\
@@ -183,6 +193,7 @@ Fisheye.prototype.initShaders = function(canvas) {
 	
 	// fragment shader uniforms
 	this.uDistortion = this.gl.getUniformLocation(this.program, 'uDistortion');
+	this.uRatio = this.gl.getUniformLocation(this.program, 'uRatio');
 
 	// textures
 	this.uImage = this.gl.getUniformLocation(this.program, 'uImage');
@@ -287,6 +298,15 @@ Fisheye.prototype.draw = function(image) {
 	// Set the texture coordinates attribute for the vertices.
 	this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.rectVerticesTextureCoordBuffer);
 	this.gl.vertexAttribPointer(this.aTextureCoord, 2, this.gl.FLOAT, false, 0, 0);
+	
+	// Update the aspect ratio.
+	if (image.naturalWidth > 0 && image.naturalHeight > 0) {
+		this.gl.uniform1f(this.uRatio, image.naturalWidth / image.naturalHeight);
+	} else if (image.width > 0 && image.height > 0) {
+		this.gl.uniform1f(this.uRatio, image.width / image.height);
+	} else {
+		this.gl.uniform1f(this.uRatio, 1.0);
+	}
 	
 	// Specify the texture to map onto the face.
 	this.gl.uniform1i(this.uImage, 0);
