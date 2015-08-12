@@ -11,8 +11,12 @@ usage
 ```Javascript
 var fisheye = new Fisheye(<canvas>);
 
-fisheye.setDistortion(<value>);
+fisheye.setDistortion(<red value>, <green value>, <blue value>);
 fisheye.draw(<image>);
 ```
 
 where `<image>` either a [`<canvas>` element](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API) or an [`HTMLImageElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement).
+
+For `setDistortion(<value>)`, if only the first argument is supplied, it is used for all colors. Use a positive value for barrel distortion and a negative value for pincushion distortion.
+
+Using different amounts of distortion for different color channels to simulate [chromatic aberration](https://en.wikipedia.org/wiki/Chromatic_aberration).  

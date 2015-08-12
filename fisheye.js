@@ -55,7 +55,7 @@ var Fisheye = function(canvas) {
 
 		// Set default distortion
 
-		this.setDistortion(0.0);
+		this.setDistortion(0.0, 0.0, 0.0);
 	}
 }
 
@@ -123,8 +123,16 @@ Fisheye.prototype.getFragmentShader = function() {
 			varying highp vec2 vTextureCoord;\
 \
 			uniform sampler2D uImage;\
-			uniform mediump float uDistortion;\
+			uniform mediump vec3 uDistortion;\
 			uniform mediump float uRatio;\
+\
+			float computeScale(float distortion, float rsqLimit) {\
+				if (distortion >= 0.0) {\
+					return 1.0 + distortion * rsqLimit;\
+				} else {\
+					return 1.0 / (1.0 - distortion * rsqLimit);\
+				}\
+			}\
 \
 			void main(void) {\
 \
@@ -138,20 +146,31 @@ Fisheye.prototype.getFragmentShader = function() {
 					rsqLimit = (pow(0.5, 2.0) + pow(0.5 / uRatio, 2.0)) / (2.0 * uRatio);\
 				}\
 \
-				float scale = 1.0;\
-				if (uDistortion >= 0.0) {\
-					scale = 1.0 + uDistortion * rsqLimit;\
-				} else {\
-					scale = 1.0 / (1.0 - uDistortion * rsqLimit);\
+				vec3 scale = vec3(computeScale(uDistortion.r, rsqLimit),\
+								  computeScale(uDistortion.g, rsqLimit),\
+								  computeScale(uDistortion.b, rsqLimit));\
+\
+				gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\
+\
+				vec2 redCoord = vec2(0.5 + (vTextureCoord.x - 0.5) * (1.0 + uDistortion.r * rsq) / scale.r,\
+									 0.5 + (vTextureCoord.y - 0.5) * (1.0 + uDistortion.r * rsq) / scale.r);\
+\
+				if (redCoord.x >= 0.0 && redCoord.x <= 1.0 && redCoord.y >= 0.0 && redCoord.y <= 1.0) {\
+					gl_FragColor.r = texture2D(uImage, redCoord).r;\
 				}\
 \
-				vec2 distorted = vec2(0.5 + (vTextureCoord.x - 0.5) * (1.0 + uDistortion * rsq) / scale,\
-									  0.5 + (vTextureCoord.y - 0.5) * (1.0 + uDistortion * rsq) / scale);\
+				vec2 greenCoord = vec2(0.5 + (vTextureCoord.x - 0.5) * (1.0 + uDistortion.g * rsq) / scale.g,\
+									   0.5 + (vTextureCoord.y - 0.5) * (1.0 + uDistortion.g * rsq) / scale.g);\
 \
-				if (distorted.x < 0.0 || distorted.x > 1.0 || distorted.y < 0.0 || distorted.y > 1.0) {\
-					gl_FragColor = vec4(0, 0, 0, 0);\
-				} else {\
-					gl_FragColor = texture2D(uImage, distorted);\
+				if (greenCoord.x >= 0.0 && greenCoord.x <= 1.0 && greenCoord.y >= 0.0 && greenCoord.y <= 1.0) {\
+					gl_FragColor.g = texture2D(uImage, greenCoord).g;\
+				}\
+\
+				vec2 blueCoord = vec2(0.5 + (vTextureCoord.x - 0.5) * (1.0 + uDistortion.b * rsq) / scale.b,\
+									  0.5 + (vTextureCoord.y - 0.5) * (1.0 + uDistortion.b * rsq) / scale.b);\
+\
+				if (blueCoord.x >= 0.0 && blueCoord.x <= 1.0 && blueCoord.y >= 0.0 && blueCoord.y <= 1.0) {\
+					gl_FragColor.b = texture2D(uImage, blueCoord).b;\
 				}\
 			}';
 }
@@ -269,10 +288,14 @@ Fisheye.prototype.initTextures = function(canvas) {
 //
 // update distortion
 //
-Fisheye.prototype.setDistortion = function(distortion) {
+Fisheye.prototype.setDistortion = function(red, green, blue) {
+	red = red || 0;
+	green = green || red;
+	blue = blue || red;
+	
 	this.gl.useProgram(this.program);
 	
-	this.gl.uniform1f(this.uDistortion, distortion);
+	this.gl.uniform3fv(this.uDistortion, [red, green, blue]);
 }
 
 //
