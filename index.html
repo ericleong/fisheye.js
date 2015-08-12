@@ -7,30 +7,107 @@
 	
 	<title>fisheye.js</title>
 	
+	<style>
+		html, body {
+			margin: 0;
+			padding: 0;
+		}
+		
+		a {
+			text-decoration: none;
+		}
+		
+		body > h1 {
+			text-align: center;
+		}
+		
+		h1, h2 {
+			font-family: sans-serif;
+			font-weight: lighter;
+			font-style: normal;
+		}
+		
+		h3 {
+			font-family: sans-serif;
+			font-style: bold;
+			font-variant: small-caps;
+		}
+		
+		#sandbox {
+			display: flex;
+			flex-wrap: nowrap;
+			justify-content: space-around;
+		}
+		
+		#controls {
+			box-sizing: border-box;
+			flex-basis: 20vw;
+		}
+		
+		#controls input {
+			width: 100%;
+		}
+		
+		@media (max-width: 768px) {
+			canvas {
+				height: 100vw;
+			}
+			
+			#sandbox {
+				flex-direction: column;
+			}
+			
+			#controls {
+				width: 100vw;
+				padding: 0 10% 10% 10%;
+				
+				flex-basis: auto;
+			}
+		}
+	</style>
+	
 	<script src="fisheye.js"></script>
 </head>
 </head>
 <body>
-	<canvas id="canvas" width="640" height="640"></canvas>
 	<h1>radial lens distortion with <a href="https://github.com/ericleong/fisheye.js">fisheye.js</a></h1>
-	<div>
-		<span>pincushion</span>
-		<input id="distortion" type="range" min="-10" max="10" value="5" step="0.2" />
-		<span>barrel</span>
+	<div id="sandbox">
+		<canvas id="canvas" width="640" height="640"></canvas>
+		<div id="controls">
+			<h2>distortion</h2>
+			<div><input id="all" type="range" min="-10" max="10" value="5" step="0.1" /></div>
+			<h2>color channels</h2>
+			<div><h3>red</h3><input id="red" type="range" min="-10" max="10" value="5" step="0.1" /></div>
+			<div><h3>green</h3><input id="green" type="range" min="-10" max="10" value="5" step="0.1" /></div>
+			<div><h3>blue</h3><input id="blue" type="range" min="-10" max="10" value="5" step="0.1" /></div>
+		</div>
 	</div>
 	
 	<script type="text/javascript">
 		var fisheye = new Fisheye(document.getElementById('canvas'));
-
-		var distortion = document.getElementById('distortion');
+		
+		var red = document.getElementById('red');
+		var green = document.getElementById('green');
+		var blue = document.getElementById('blue');
 
 		var update = function() {
-			fisheye.setDistortion(distortion.value);
+			fisheye.setDistortion(red.value, green.value, blue.value);
 			fisheye.clear();
 			fisheye.draw(img);
 		};
 
-		distortion.addEventListener('input', update);
+		red.addEventListener('input', update);
+		green.addEventListener('input', update);
+		blue.addEventListener('input', update);
+		
+		var all = document.getElementById('all');
+		all.addEventListener('input', function() {
+			red.value = all.value;
+			green.value = all.value;
+			blue.value = all.value;
+			
+			update();
+		});
 	
 		var img = new Image();
 		img.addEventListener('load', update, false);
