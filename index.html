@@ -37,11 +37,16 @@
 			display: flex;
 			flex-wrap: nowrap;
 			justify-content: space-around;
+
+			display : -webkit-flex;
+			-webkit-flex-wrap: nowrap;
+			-webkit-justify-content: space-around;
 		}
 		
 		#controls {
 			box-sizing: border-box;
 			flex-basis: 20vw;
+			-webkit-flex-basis: 20vw;
 		}
 		
 		#controls input {
@@ -55,6 +60,7 @@
 			
 			#sandbox {
 				flex-direction: column;
+				-webkit-flex-direction: column;
 			}
 			
 			#controls {
@@ -62,6 +68,7 @@
 				padding: 0 10% 10% 10%;
 				
 				flex-basis: auto;
+				-webkit-flex-basis: auto;
 			}
 		}
 	</style>
