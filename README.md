@@ -25,4 +25,6 @@ where `<image>` either a [`<canvas>` element](https://developer.mozilla.org/en-U
 
 For `setDistortion(<value>)`, if only the first argument is supplied, it is used for all colors. Use a positive value for barrel distortion and a negative value for pincushion distortion.
 
+If the canvas size is changed, update the viewport with `setViewport(width, height)`.
+
 Use different amounts of distortion for each color channel to simulate [chromatic aberration](https://en.wikipedia.org/wiki/Chromatic_aberration).  
