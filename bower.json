@@ -1,0 +1,35 @@
+{
+  "name": "fisheye.js",
+  "main": "fisheye.js",
+  "version": "1.0.0",
+  "homepage": "https://github.com/ericleong/fisheye.js",
+  "authors": [
+    "Eric Leong <me@ericleong.me> (http://ericleong.me)"
+  ],
+  "description": "Apply radial lens distortion and chromatic abberation to images using WebGL.",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "fisheye",
+    "webgl",
+    "distortion",
+    "canvas",
+    "image",
+    "processing"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ericleong/fisheye.js"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "LICENSE",
+    "README.md"
+  ]
+}
