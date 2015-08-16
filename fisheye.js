@@ -150,13 +150,14 @@ Fisheye.prototype.getFragmentShader = function() {
 								  computeScale(uDistortion.g, rsqLimit),\
 								  computeScale(uDistortion.b, rsqLimit));\
 \
-				gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\
+				gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);\
 \
 				vec2 redCoord = vec2(0.5 + (vTextureCoord.x - 0.5) * (1.0 + uDistortion.r * rsq) / scale.r,\
 									 0.5 + (vTextureCoord.y - 0.5) * (1.0 + uDistortion.r * rsq) / scale.r);\
 \
 				if (redCoord.x >= 0.0 && redCoord.x <= 1.0 && redCoord.y >= 0.0 && redCoord.y <= 1.0) {\
 					gl_FragColor.r = texture2D(uImage, redCoord).r;\
+					gl_FragColor.a += texture2D(uImage, redCoord).a / 3.0;\
 				}\
 \
 				vec2 greenCoord = vec2(0.5 + (vTextureCoord.x - 0.5) * (1.0 + uDistortion.g * rsq) / scale.g,\
@@ -164,6 +165,7 @@ Fisheye.prototype.getFragmentShader = function() {
 \
 				if (greenCoord.x >= 0.0 && greenCoord.x <= 1.0 && greenCoord.y >= 0.0 && greenCoord.y <= 1.0) {\
 					gl_FragColor.g = texture2D(uImage, greenCoord).g;\
+					gl_FragColor.a += texture2D(uImage, greenCoord).a / 3.0;\
 				}\
 \
 				vec2 blueCoord = vec2(0.5 + (vTextureCoord.x - 0.5) * (1.0 + uDistortion.b * rsq) / scale.b,\
@@ -171,6 +173,7 @@ Fisheye.prototype.getFragmentShader = function() {
 \
 				if (blueCoord.x >= 0.0 && blueCoord.x <= 1.0 && blueCoord.y >= 0.0 && blueCoord.y <= 1.0) {\
 					gl_FragColor.b = texture2D(uImage, blueCoord).b;\
+					gl_FragColor.a += texture2D(uImage, blueCoord).a / 3.0;\
 				}\
 			}';
 }
@@ -296,6 +299,13 @@ Fisheye.prototype.setDistortion = function(red, green, blue) {
 	this.gl.useProgram(this.program);
 	
 	this.gl.uniform3fv(this.uDistortion, [red, green, blue]);
+}
+
+//
+// update viewport
+//
+Fisheye.prototype.setViewport = function(width, height) {
+	this.gl.viewport(0, 0, width, height);
 }
 
 //
