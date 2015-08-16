@@ -21,6 +21,11 @@
 			text-align: center;
 		}
 		
+		h1 {
+			padding-left: 1em;
+			padding-right: 1em;
+		}
+		
 		h1, h2 {
 			font-family: sans-serif;
 			font-weight: lighter;
@@ -35,18 +40,20 @@
 		
 		#sandbox {
 			display: flex;
-			flex-wrap: nowrap;
 			justify-content: space-around;
 
 			display : -webkit-flex;
-			-webkit-flex-wrap: nowrap;
 			-webkit-justify-content: space-around;
+			
+			width: 100%;
 		}
 		
 		#controls {
 			box-sizing: border-box;
 			flex-basis: 20vw;
 			-webkit-flex-basis: 20vw;
+			
+			padding: 0 1em 0 1em;
 		}
 		
 		#controls input {
@@ -73,6 +80,11 @@
 		}
 	</style>
 	
+	<script src="bower_components/glif.js/omggif.js"></script>
+	<script src="bower_components/glif.js/glif.js"></script>
+	<script src="bower_components/glif.js/viewer.js"></script>
+	<script src="droppick.js"></script>
+	<script src="grab.js"></script>
 	<script src="fisheye.js"></script>
 </head>
 </head>
@@ -91,13 +103,17 @@
 	</div>
 	
 	<script type="text/javascript">
-		var fisheye = new Fisheye(document.getElementById('canvas'));
+		var canvas = document.getElementById('canvas');
+		var fisheye = new Fisheye(canvas);
+		
+		var img;
 		
 		var red = document.getElementById('red');
 		var green = document.getElementById('green');
 		var blue = document.getElementById('blue');
 
 		var update = function() {
+			fisheye.setViewport(canvas.width, canvas.height);
 			fisheye.setDistortion(red.value, green.value, blue.value);
 			fisheye.clear();
 			fisheye.draw(img);
@@ -116,9 +132,47 @@
 			update();
 		});
 	
-		var img = new Image();
+		img = new Image();
 		img.addEventListener('load', update, false);
 		img.src = './rainbow-glass.jpg';
+		
+		var gifTimeout;
+		
+		// drag and drop
+		droppick(document.getElementById('sandbox'), null, function(items) {
+			grab(items, function(item) {
+				clearTimeout(gifTimeout);
+				
+				if (item instanceof ArrayBuffer) {
+					img = document.createElement('canvas');
+					
+					var view = viewer(img, item, function(timeoutId) {
+						gifTimeout = timeoutId;
+						
+						canvas.width = img.width;
+						canvas.height = img.height;
+						
+						canvas.style.width = canvas.width + 'px';
+						canvas.style.height = canvas.height + 'px';
+						
+						update();
+					});
+					
+					gifTimeout = view();
+				} else if (item instanceof HTMLImageElement) {
+					
+					canvas.width = item.naturalWidth;
+					canvas.height = item.naturalHeight;
+					
+					canvas.style.width = canvas.width + 'px';
+					canvas.style.height = canvas.height + 'px';
+					
+					img = item;
+					
+					update();
+				}
+			})
+		});
 	</script>
 </body>
 </html>

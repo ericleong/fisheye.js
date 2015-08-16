@@ -1,0 +1,26 @@
+{
+  "name": "glif.js",
+  "main": "glif.js",
+  "ignore": [
+    "README.md"
+  ],
+  "homepage": "https://github.com/ericleong/glif.js",
+  "authors": [
+    { "name": "Eric Leong", "email": "me@ericleong.me", "homepage": "http://ericleong.me" },
+    { "name": "Dean McNamee", "email": "dean@gmail.com" }
+  ],
+  "description": "Javascript GIF decoder that uses WebGL.",
+  "moduleType": [
+    "globals"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ericleong/glif.js"
+  },
+  "keywords": [
+    "webgl",
+    "gif",
+    "canvas"
+  ],
+  "license": "MIT"
+}

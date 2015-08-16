@@ -1,0 +1,11 @@
+{
+  "name": "glif",
+  "version": "1.0.9",
+  "author": "Eric Leong <eric@ericleong.me>",
+  "keywords": ["gif", "gif89a", "gif87a", "webgl"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ericleong/glif.js"
+  },
+  "main": "glif.js"
+}

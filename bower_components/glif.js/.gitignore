@@ -1,0 +1,9 @@
+# Sublime
+*.sublime-project
+*.sublime-workspace
+
+# Windows
+Thumbs.db
+
+# Mac
+*.DS_Store

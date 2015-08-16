@@ -31,5 +31,8 @@
     "tests",
     "LICENSE",
     "README.md"
-  ]
+  ],
+  "dependencies": {
+    "glif.js": "~1.0.0"
+  }
 }
