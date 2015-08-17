@@ -60,7 +60,43 @@
 			width: 100%;
 		}
 		
+		#picker-container {
+			position: relative;
+			
+			width: 100%;
+			height: 3em;
+			
+			font-size: 1.25em;
+			font-family: sans-serif;
+			
+			margin-top: 1em;
+		}
+		
+		#picker-container::before {
+			position: absolute;
+			top: 0;
+			left: 0;
+			bottom: 0;
+			right: 0;
+		
+			padding: 1em;
+		
+			content: 'pick another image';
+			
+			text-align: center;
+		}
+		
+		#picker-container > input {
+			width: 100%;
+			height: 100%;
+		
+			cursor: pointer;
+		
+			opacity: 0 !important;
+		}
+		
 		@media (max-width: 768px) {
+			
 			canvas {
 				height: 100vw;
 			}
@@ -99,6 +135,7 @@
 			<div><h3>red</h3><input id="red" type="range" min="-10" max="10" value="5" step="0.1" /></div>
 			<div><h3>green</h3><input id="green" type="range" min="-10" max="10" value="5" step="0.1" /></div>
 			<div><h3>blue</h3><input id="blue" type="range" min="-10" max="10" value="5" step="0.1" /></div>
+			<div id="picker-container"><input id="picker" type="file" accept="image/*" /></div>
 		</div>
 	</div>
 	
@@ -139,9 +176,33 @@
 		var gifTimeout;
 		
 		// drag and drop
-		droppick(document.getElementById('sandbox'), null, function(items) {
+		droppick(document.getElementById('sandbox'), document.getElementById('picker'), function(items) {
 			grab(items, function(item) {
 				clearTimeout(gifTimeout);
+				
+				function setSize(width, height) {
+					if (width > 0.8 * window.innerWidth) {
+						if (window.matchMedia('(max-width: 768px)').matches) {
+							canvas.width = Math.round(window.innerWidth * window.devicePixelRatio);
+							canvas.height = Math.round(canvas.width * (height / width));
+							
+							canvas.style.width = '100vw'
+							canvas.style.height = 100 * (height / width) + 'vw';
+						} else {
+							canvas.width = Math.round(0.8 * window.innerWidth * window.devicePixelRatio);
+							canvas.height = Math.round(canvas.width * (height / width));
+							
+							canvas.style.width = '80vw'
+							canvas.style.height = 80 * (height / width) + 'vw';
+						}
+					} else {
+						canvas.width = width;
+						canvas.height = height;
+						
+						canvas.style.width = canvas.width + 'px';
+						canvas.style.height = canvas.height + 'px';
+					}
+				}
 				
 				if (item instanceof ArrayBuffer) {
 					img = document.createElement('canvas');
@@ -149,26 +210,16 @@
 					var view = viewer(img, item, function(timeoutId) {
 						gifTimeout = timeoutId;
 						
-						canvas.width = img.width;
-						canvas.height = img.height;
-						
-						canvas.style.width = canvas.width + 'px';
-						canvas.style.height = canvas.height + 'px';
-						
+						setSize(img.width, img.height);
 						update();
 					});
 					
 					gifTimeout = view();
 				} else if (item instanceof HTMLImageElement) {
 					
-					canvas.width = item.naturalWidth;
-					canvas.height = item.naturalHeight;
-					
-					canvas.style.width = canvas.width + 'px';
-					canvas.style.height = canvas.height + 'px';
-					
 					img = item;
-					
+
+					setSize(item.naturalWidth, item.naturalHeight);
 					update();
 				}
 			})
