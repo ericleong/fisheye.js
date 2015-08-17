@@ -155,13 +155,16 @@
 			fisheye.clear();
 			fisheye.draw(img);
 		};
+		
+		var ie11 = !(window.ActiveXObject) && "ActiveXObject" in window;
+		var eventType = ie11 ? 'change' : 'input';
 
-		red.addEventListener('input', update);
-		green.addEventListener('input', update);
-		blue.addEventListener('input', update);
+		red.addEventListener(eventType, update);
+		green.addEventListener(eventType, update);
+		blue.addEventListener(eventType, update);
 		
 		var all = document.getElementById('all');
-		all.addEventListener('input', function() {
+		all.addEventListener(eventType, function() {
 			red.value = all.value;
 			green.value = all.value;
 			blue.value = all.value;
